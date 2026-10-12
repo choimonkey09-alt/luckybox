@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지능형 운세 및 행운 예측 시스템</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                    },
+                    colors: {
+                        mystic: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-full py-8 px-4 sm:px-6 lg:px-8">
+
+    <header class="max-w-4xl mx-auto text-center mb-8">
+        <div class="inline-flex items-center justify-center p-3 bg-mystic-600/30 rounded-full mb-4 border border-mystic-500/30">
+            <i class="fa-solid fa-wand-magic-sparkles text-2xl text-amber-400"></i>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-2">
+            지능형 운세 및 행운 예측 시스템
+        </h1>
+        <p class="text-gray-300 text-sm sm:text-base">
+            사주 명리학과 통계적 추론을 통한 맞춤형 시험·연애·재물운 분석 리포트
+        </p>
+    </header>
+
+    <main class="max-w-2xl mx-auto w-full flex-grow">
+        <div id="input-card" class="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl glow-effect mb-8">
+            <form id="fortune-form" class="space-y-6" onsubmit="handleFormSubmit(event)">
+                <div>
+                    <label for="userName" class="block text-sm font-medium text-gray-200 mb-2">
+                        <i class="fa-solid fa-user text-mystic-400 mr-2"></i>이름 (성함)
+                    </label>
+                    <input type="text" id="userName" required placeholder="예: 홍길동" 
+                        class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-mystic-500 focus:border-transparent transition">
+                </div>
+
+                <div>
+                    <label for="userBirth" class="block text-sm font-medium text-gray-200 mb-2">
+                        <i class="fa-solid fa-calendar-days text-mystic-400 mr-2"></i>생년월일
+                    </label>
+                    <input type="date" id="userBirth" required 
+                        class="w-full px-4 py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-mystic-500 focus:border-transparent transition">
+                    <p class="text-xs text-gray-400 mt-1">양력 기준으로 정밀 계산되며 음력은 자동 환산되어 적용됩니다.</p>
+                </div>
+
+                <button type="submit" 
+                    class="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-mystic-600 to-indigo-600 text-white font-semibold shadow-lg hover:from-mystic-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-mystic-400 transition transform active:scale-95 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-meteor"></i>
+                    <span>맞춤 운세 분석 리포트 생성하기</span>
+                </button>
+            </form>
+        </div>
+
+        <div id="loading-spinner" class="hidden text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-mystic-500 border-t-transparent mb-4"></div>
+            <p class="text-mystic-200 font-medium">우주의 기운과 사주 명리 데이터를 분석 중입니다...</p>
+        </div>
+
+        <div id="result-container" class="hidden space-y-6">
+            <div class="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden border-amber-500/20">
+                <div class="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
+                
+                <div class="flex items-center justify-between border-b border-slate-700/60 pb-4 mb-6">
+                    <h2 id="result-title" class="text-xl sm:text-2xl font-bold text-amber-300">
+                        🔮 [이름] 님의 맞춤 운세 분석 리포트
+                    </h2>
+                    <button onclick="resetForm()" class="text-xs text-gray-400 hover:text-white bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> 다시 입력
+                    </button>
+                </div>
+
+                <!-- 1. 시험운 -->
+                <div class="mb-6 bg-slate-900/40 p-5 rounded-xl border border-slate-800">
+                    <h3 class="text-lg font-semibold text-mystic-300 mb-3 flex items-center">
+                        <i class="fa-solid fa-book-open-reader mr-2"></i> 1. 시험운 & 합격 기운
+                    </h3>
+                    <div class="space-y-3 text-sm sm:text-base text-gray-300">
+                        <p><strong class="text-white">운세 분석:</strong> <span id="exam-analysis"></span></p>
+                        <p><strong class="text-white">합격 조언:</strong> <span id="exam-advice"></span></p>
+                        <div class="mt-3 p-3 bg-mystic-900/40 rounded-lg border border-mystic-500/20 text-amber-200 font-medium flex items-center justify-between">
+                            <span>🍀 시험 추천 번호 (1~5):</span>
+                            <span id="exam-number" class="text-lg font-bold bg-mystic-600/40 px-3 py-1 rounded-md border border-mystic-400/30"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. 연애운 -->
+                <div class="mb-6 bg-slate-900/40 p-5 rounded-xl border border-slate-800">
+                    <h3 class="text-lg font-semibold text-pink-300 mb-3 flex items-center">
+                        <i class="fa-solid fa-heart mr-2"></i> 2. 연애운 & 인연의 흐름
+                    </h3>
+                    <div class="space-y-3 text-sm sm:text-base text-gray-300">
+                        <p><strong class="text-white">운세 분석:</strong> <span id="love-analysis"></span></p>
+                        <p><strong class="text-white">연애 팁:</strong> <span id="love-advice"></span></p>
+                    </div>
+                </div>
+
+                <!-- 3. 재물운 -->
+                <div class="bg-slate-900/40 p-5 rounded-xl border border-slate-800">
+                    <h3 class="text-lg font-semibold text-emerald-300 mb-3 flex items-center">
+                        <i class="fa-solid fa-coins mr-2"></i> 3. 재물운 & 금전 흐름
+                    </h3>
+                    <div class="space-y-3 text-sm sm:text-base text-gray-300">
+                        <p><strong class="text-white">운세 분석:</strong> <span id="wealth-analysis"></span></p>
+                        <p><strong class="text-white">재물 관리 팁:</strong> <span id="wealth-advice"></span></p>
+                        <div class="mt-3 p-3 bg-emerald-950/40 rounded-lg border border-emerald-500/20 text-emerald-200 font-medium flex items-center justify-between">
+                            <span>✨ 행운의 요소:</span>
+                            <span id="lucky-element" class="font-bold"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="max-w-4xl mx-auto text-center mt-12 text-xs text-gray-500">
+        <p>&copy; 2026 Intelligent Fortune & Luck Prediction System. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('userName').value.trim();
+            const birth = document.getElementById('userBirth').value;
+
+            if (!name || !birth) return;
+
+            // Hide form, show loading
+            document.getElementById('input-card').classList.add('hidden');
+            document.getElementById('loading-spinner').classList.remove('hidden');
+
+            // Simulate calculation delay for immersive experience
+            setTimeout(() => {
+                generateReport(name, birth);
+                document.getElementById('loading-spinner').classList.add('hidden');
+                document.getElementById('result-container').classList.remove('hidden');
+            }, 1200);
+        }
+
+        function generateReport(name, birth) {
+            // Deterministic hash based on name & birth for custom-feeling variation
+            let hash = 0;
+            const seedStr = name + birth;
+            for (let i = 0; i < seedStr.length; i++) {
+                hash = (hash << 5) - hash + seedStr.charCodeAt(i);
+                hash |= 0;
+            }
+            const absHash = Math.abs(hash);
+
+            // Lucky number between 1 and 5
+            const luckyNum = (absHash % 5) + 1;
+            const secondaryNum = ((absHash + 2) % 5) + 1;
+            const numberString = luckyNum === secondaryNum ? `${luckyNum}번` : `${luckyNum}번, ${secondaryNum}번`;
+
+            // Data variations
+            const examAnalyses = [
+                "집중력이 최고조에 달하는 시기입니다. 꾸준히 쌓아온 지식이 시험 당일에 명확하게 발현되며, 특히 어려운 문제에서 직관력이 빛을 발할 것입니다.",
+                "학업적 기운이 상승곡선을 그리고 있습니다. 잡념을 비우고 핵심 요약에 집중한다면 노력 대비 매우 우수한 성과를 거둘 수 있습니다.",
+                "시험 당일의 긴장감을 지혜롭게 다스릴 수 있는 기운이 감돌고 있습니다. 평소 실력을 온전히 발휘할 수 있는 최적의 컨디션이 유지됩니다."
+            ];
+            const examAdvices = [
+                "시험 전날 밤은 무리한 암기보다 가벼운 복습과 충분한 수면으로 뇌의 컨디션을 최상으로 유지하세요.",
+                "모르는 문제가 나와도 당황하지 말고 아는 문제부터 빠르게 해결한 뒤 여유를 가지고 접근하세요.",
+                "자신감을 가지고 오답 노트 위주로 최종 점검을 진행하면 합격률이 급상승합니다."
+            ];
+
+            const loveAnalyses = [
+                "주변의 시선을 사로잡는 매력 지수가 최고조에 달하는 시기입니다. 자연스러운 만남 속에서 따뜻한 인연의 기운이 다가옵니다.",
+                "현재의 관계 또는 새로운 인연과의 소통이 매우 매끄럽게 풀리는 시기입니다. 진솔한 대화가 관계를 한 단계 더 깊게 만들어 줍니다.",
+                "내면의 평온함이 매력으로 작용하여 상대방에게 깊은 신뢰와 호감을 줄 수 있는 시기입니다."
+            ];
+            const loveAdvices = [
+                "상대방의 작은 이야기에 귀 기울이고 공감해 주는 태도가 최고의 매력 포인트가 됩니다.",
+                "표현에 인색해하지 말고 따뜻한 말한마디와 미소를 건네보세요. 관계가 급격히 가까워집니다.",
+                "내 자신을 먼저 아끼고 사랑할 때 타인과의 관계도 자연스럽고 조화롭게 풀려나갑니다."
+            ];
+
+            const wealthAnalyses = [
+                "금전 흐름이 안정세로 접어들며, 예기치 않은 작은 행운이나 보상이 따를 수 있는 길운이 들어와 있습니다.",
+                "재물운의 흐름이 활발하여 계획적인 자산 관리가 빛을 발하는 시기입니다. 투자나 지출에 있어서 현명한 판단력이 돋보입니다.",
+                "불필요한 지출이 줄어들고 시드머니가 차곡차곡 쌓이는 실속 있는 금전운을 보이고 있습니다."
+            ];
+            const wealthAdvices = [
+                "충동구매를 자제하고 현재 보유한 자산의 흐름을 꼼꼼히 기록하는 습관을 들이세요.",
+                "작은 금전적 여유가 생겼을 때 미래를 위한 투자나 자기 계발에 일부를 투자하면 배로 돌아옵니다.",
+                "주변 사람들과의 소중한 나눔과 베풂이 더 큰 재물운을 불러오는 통로가 됩니다."
+            ];
+
+            const colors = ["로얄 블루 / 동쪽", "에메랄드 그린 / 남쪽", "골드 옐로우 / 서쪽", "퍼플 바이올렛 / 북쪽", "크림 화이트 / 중앙"];
+
+            // Assign values
+            document.getElementById('result-title').innerText = `🔮 ${name} 님의 맞춤 운세 분석 리포트`;
+            document.getElementById('exam-analysis').innerText = examAnalyses[absHash % examAnalyses.length];
+            document.getElementById('exam-advice').innerText = examAdvices[(absHash + 1) % examAdvices.length];
+            document.getElementById('exam-number').innerText = `${numberString} - 수리 오행상 학업과 집중력을 극대화해주는 행운의 번호입니다.`;
+            document.getElementById('love-analysis').innerText = loveAnalyses[absHash % loveAnalyses.length];
+            document.getElementById('love-advice').innerText = loveAdvices[(absHash + 1) % loveAdvices.length];
+            document.getElementById('wealth-analysis').innerText = wealthAnalyses[absHash % wealthAnalyses.length];
+            document.getElementById('wealth-advice').innerText = wealthAdvices[(absHash + 1) % wealthAdvices.length];
+            document.getElementById('lucky-element').innerText = colors[absHash % colors.length];
+        }
+
+        function resetForm() {
+            document.getElementById('result-container').classList.add('hidden');
+            document.getElementById('input-card').classList.remove('hidden');
+            document.getElementById('fortune-form').reset();
+        }
+    </script>
+</body>
+</html>
